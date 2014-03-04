@@ -47,11 +47,6 @@ when 'ubuntu'
   end
 end
 
-service 'stackdriver-agent' do
-  supports :start => true, :stop => true, :status => true, :restart => true, :reload => true
-  action (node[:stackdriver][:enable]) ? :enable : [:disable, :stop]
-end
-
 template node[:stackdriver][:config_path] do
   source 'stackdriver-agent.erb'
   variables ({
@@ -60,4 +55,9 @@ template node[:stackdriver][:config_path] do
   })
   notifies :restart, 'service[stackdriver-agent]', :immediately
   only_if { node[:stackdriver][:enable] }
+end
+
+service 'stackdriver-agent' do
+  supports :start => true, :stop => true, :status => true, :restart => true, :reload => true
+  action (node[:stackdriver][:enable]) ? :enable : [:disable, :stop]
 end
